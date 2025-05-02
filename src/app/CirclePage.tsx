@@ -59,6 +59,7 @@ function Circle({ currentColor }: { currentColor: MotionValue<string> }) {
   useEffect(() => {
     circleSize.set(Math.max(width, height) * 1.8);
   }, [width, height, circleSize]);
+
   return (
     <motion.svg
       width="100%"
@@ -79,7 +80,13 @@ function Circle({ currentColor }: { currentColor: MotionValue<string> }) {
       transition={{ duration: 0.75 }}
     >
       <g>
-        <motion.circle cx="150" cy="150" r="145" fill={currentColor} />
+        <motion.circle
+          cx="150"
+          cy="150"
+          r="145"
+          style={{ fill: currentColor }}
+          transition={{ duration: 0.75 }}
+        />
       </g>
 
       <motion.g style={{ rotate: roundedWheelValue }}>
@@ -175,7 +182,7 @@ export default function CirclePage({
                   position: 'absolute',
                 }}
                 transition={{
-                  opacity: { duration: 0 },
+                  opacity: { duration: 0.3 },
                 }}
               >
                 {child}
