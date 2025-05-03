@@ -53,8 +53,8 @@ export function WheelContextProvider({ children }: { children: React.ReactNode }
     damping: 50,
     mass: 2,
     bounce: 0.2,
-    restSpeed: 0.5,
-    restDelta: 0.05,
+    restSpeed: 10,
+    restDelta: 0.01,
   });
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);

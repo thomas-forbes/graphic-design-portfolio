@@ -182,7 +182,7 @@ export default function CirclePage({
                   position: 'absolute',
                 }}
                 transition={{
-                  opacity: { duration: 0.3 },
+                  opacity: { duration: 0 },
                 }}
               >
                 {child}

@@ -5,7 +5,7 @@ import { WheelContextProvider } from '@/app/WheelContext';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image, { ImageProps } from 'next/image';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 function PersonalSection() {
   return (
@@ -48,17 +48,6 @@ function PersonalSection() {
           </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-function Square({ index, style }: { index: number; style: React.CSSProperties }) {
-  return (
-    <div
-      className="flex size-64 items-center justify-center text-5xl font-bold text-white"
-      style={style}
-    >
-      {index}
     </div>
   );
 }
@@ -121,15 +110,12 @@ function SquirmImage(props: ImageProps) {
   }, [isLightboxOpen]);
 
   return (
-    <div className="relative h-full w-full">
+    <div className="relative max-h-full">
       <div className={cn('h-full w-full opacity-0', isLightboxOpen && 'pointer-events-none')}>
         <Image
           {...props}
           alt={props.alt}
-          className={cn(
-            'h-full w-full rounded-xl bg-white object-contain duration-100',
-            props.className,
-          )}
+          className={cn('h-full w-full rounded-xl duration-100', props.className)}
         />
       </div>
 
@@ -152,10 +138,7 @@ function SquirmImage(props: ImageProps) {
           {...props}
           alt={props.alt}
           style={{ transform }}
-          className={cn(
-            'h-full w-full rounded-xl bg-white object-contain duration-100',
-            props.className,
-          )}
+          className={cn('h-auto max-h-full w-full rounded-xl duration-100', props.className)}
         />
       </motion.div>
       <Lightbox isOpen={isLightboxOpen} onClose={() => setIsLightboxOpen(false)} />
@@ -163,16 +146,8 @@ function SquirmImage(props: ImageProps) {
   );
 }
 
-function ProjectSection() {
-  const images = [
-    {
-      src: '/P1/sketch-double-decker.png',
-      alt: 'double-decker sketch',
-    },
-    {
-      src: '/P1/final-double-decker.png',
-      alt: 'double-decker final',
-    },
+function Project1() {
+  const images1 = [
     {
       src: '/P1/sketch-single-decker.png',
       alt: 'single-decker sketch',
@@ -181,66 +156,239 @@ function ProjectSection() {
       src: '/P1/final-single-decker.png',
       alt: 'single-decker final',
     },
+    {
+      src: '/P1/final-double-decker.png',
+      alt: 'double-decker final',
+    },
   ];
+  return (
+    <ProjectSection className="grid grid-cols-2 grid-rows-2 gap-5" subtitle="Project 1">
+      <div className="flex flex-col justify-around gap-3">
+        <div className="flex flex-col gap-5">
+          <h2 className="text-4xl font-black">Dublin Bus Icons</h2>
+          <p className="font-mono text-slate-700 uppercase">adobe illustrator</p>
+        </div>
+        <p className="text-light font-mono text-sm text-slate-600">
+          I created a pair of isometric bus icons. I developed a unified style with reused line
+          patterns and a complementary color system. The process moved from pencil sketches through
+          digital refinement, with particular attention paid to maintaining the isometric
+          perspective and essential vehicle characteristics.
+        </p>
+      </div>
+      {images1.map((image) => (
+        <SquirmImage
+          key={image.alt}
+          src={image.src}
+          alt={image.alt}
+          width={500}
+          height={500}
+          className="h-full w-full bg-white object-contain shadow-xl"
+        />
+      ))}
+    </ProjectSection>
+  );
+}
+
+function Project2Page1() {
+  return (
+    <ProjectSection className="flex flex-col gap-8" subtitle="Project 2">
+      <h2 className="text-4xl font-black">Mars Logistics Company Business Card</h2>
+      <p className="font-mono text-slate-700 uppercase">adobe illustrator</p>
+      <p className="text-light font-mono text-sm text-slate-600">
+        I designed a minimalist space logistics brand using a rocket motif and atmospheric color
+        layers. The design merges Mars&apos; terrain colors with launch sequence imagery, built in
+        Illustrator using geometric shapes and clean typography. The final system works across
+        business cards and social media while maintaining its visual impact at any scale.
+      </p>
+      <SquirmImage
+        src="/P2/branding.png"
+        alt="Project 2"
+        width={900}
+        height={800}
+        className="w-full bg-white object-contain shadow-xl"
+      />
+    </ProjectSection>
+  );
+}
+
+function Project2Page2() {
+  return (
+    <ProjectSection className="grid grid-cols-2 gap-5" subtitle="Project 2">
+      {[
+        {
+          title: 'front',
+          item: (
+            <SquirmImage
+              src="/P2/front.png"
+              alt="Project 2"
+              width={500}
+              height={500}
+              className="w-full object-cover shadow-xl"
+            />
+          ),
+        },
+        {
+          title: 'back',
+          item: (
+            <SquirmImage
+              src="/P2/back.png"
+              alt="Project 2"
+              width={500}
+              height={500}
+              className="w-full object-cover shadow-xl"
+            />
+          ),
+        },
+      ].map(({ title, item }) => (
+        <div key={title} className="flex max-h-full flex-col items-center gap-2">
+          <p className="font-mono tracking-widest text-slate-600 uppercase">{title}</p>
+          <div className="relative w-full flex-1">
+            <div className="absolute inset-0">{item}</div>
+          </div>
+        </div>
+      ))}
+    </ProjectSection>
+  );
+}
+
+function Project3Page1() {
+  return (
+    <ProjectSection className="grid grid-cols-2 gap-5" subtitle="Project 3">
+      <></>
+    </ProjectSection>
+  );
+}
+
+function Project3Page2() {
+  const minPage = 0;
+  const maxPage = 7;
+  const [page, setPage] = useState(minPage);
+  const [transitioning, setTransitioning] = useState(false);
+  const [direction, setDirection] = useState(0); // 1 for increment, -1 for decrement
+
+  const incrementPage = useCallback(() => {
+    if (page < maxPage) {
+      setDirection(1);
+      setTransitioning(true);
+      setPage(page + 1);
+    }
+  }, [page, maxPage]);
+
+  const decrementPage = useCallback(() => {
+    if (page > minPage) {
+      setDirection(-1);
+      setTransitioning(true);
+      setPage(page - 1);
+    }
+  }, [page, minPage]);
+
+  return (
+    <ProjectSection className="relative h-full w-full" subtitle="Project 3">
+      <div className="relative h-full w-full -translate-x-26">
+        {Array.from({ length: 8 }).map((_, index) => {
+          const isCurrentPage = index === page;
+          const isNextPage = index > page;
+
+          // Calculate z-index based on whether we're transitioning and in which direction
+          const getZIndex = () => {
+            if (transitioning && direction === -1 && index === page + 1) {
+              return maxPage + 5; // Keep the page below current extra high during backwards transition
+            }
+            if (isCurrentPage) {
+              return maxPage + 3; // Current page is very high
+            }
+            return maxPage - Math.abs(index - page);
+          };
+
+          return (
+            <motion.div
+              key={index}
+              className={cn(
+                'absolute top-0 bottom-0 h-fit cursor-pointer overflow-hidden rounded-xl',
+                isCurrentPage || index === page + 1 ? 'shadow-xl' : '',
+              )}
+              initial={false}
+              animate={{
+                x: isNextPage ? 'calc(100% + 2rem)' : '0%',
+                rotateY: isNextPage ? -5 : 0,
+              }}
+              transition={{
+                type: 'spring',
+                stiffness: 200,
+                damping: 15,
+                restSpeed: 3,
+                restDelta: 0.01,
+                onComplete: () => setTransitioning(false),
+              }}
+              style={{
+                originX: isNextPage ? 0 : 1,
+                zIndex: getZIndex(),
+              }}
+              onClick={() => {
+                if (isNextPage) incrementPage();
+                else if (isCurrentPage) decrementPage();
+              }}
+            >
+              <Image
+                src={`/P3/page-00${index + 1}.png`}
+                alt="Project 3"
+                width={450}
+                height={500}
+                className="object-contain"
+              />
+            </motion.div>
+          );
+        })}
+      </div>
+    </ProjectSection>
+  );
+}
+
+function ProjectSection({
+  children,
+  className,
+  subtitle,
+}: {
+  children: React.ReactNode;
+  className: string;
+  subtitle: string;
+}) {
   return (
     <div className="flex h-full flex-col items-center justify-between gap-5">
       <div className="relative w-full flex-1">
-        <div className="absolute inset-0 grid w-full flex-1 grid-cols-2 grid-rows-2 gap-5 *:rounded-xl">
-          {images.map((image) => (
-            <SquirmImage
-              key={image.alt}
-              src={image.src}
-              alt={image.alt}
-              width={500}
-              height={500}
-              className="h-full w-full bg-white object-contain shadow-xl"
-            />
-          ))}
-        </div>
+        <div className={cn('absolute inset-0 w-full', className)}>{children}</div>
       </div>
-      <p className="font-mono text-xl text-slate-700 uppercase">Project 1</p>
+      <p className="font-mono text-lg tracking-widest text-slate-700 uppercase">{subtitle}</p>
     </div>
   );
 }
 
 export default function Page() {
-  const colors = [
-    // project 1
-    '#bfdbfe',
-    '#bae6fd',
-    // project 2
-    '#a7f3d0',
-    '#ecfccb',
-    // project 3
-    '#fed7aa',
-    '#fecaca',
-  ];
-  const squareStyles = [
-    { backgroundColor: '#F87171', borderRadius: '16px' },
-    { backgroundColor: '#60A5FA', borderRadius: '8px 32px 8px 32px' },
-    { backgroundColor: '#34D399', borderRadius: '50%' },
-    { backgroundColor: '#A78BFA', borderRadius: '16px 16px 48px 48px' },
-    { backgroundColor: '#FBBF24', borderRadius: '8px' },
-    { backgroundColor: '#EC4899', borderRadius: '24px 8px 24px 8px' },
-    { backgroundColor: '#A3E635', borderRadius: '32px 32px 8px 8px' },
-    { backgroundColor: '#38BDF8', borderRadius: '8px 48px 48px 8px' },
-    { backgroundColor: '#FB923C', borderRadius: '50% 0 50% 0' },
-    { backgroundColor: '#818CF8', borderRadius: '32px' },
-  ];
-
   const items = [
     {
       element: <PersonalSection />,
       color: '#ddd6fe',
     },
     {
-      element: <ProjectSection />,
+      element: <Project1 />,
       color: '#bfdbfe',
     },
-    ...Array.from({ length: 6 }, (_, i) => ({
-      element: <Square key={i} index={i} style={squareStyles[i % squareStyles.length]} />,
-      color: colors[i % colors.length],
-    })),
+    {
+      element: <Project2Page1 />,
+      color: '#a5f3fc',
+    },
+    {
+      element: <Project2Page2 />,
+      color: '#99f6e4',
+    },
+    {
+      element: <Project3Page1 />,
+      color: '#fed7aa',
+    },
+    {
+      element: <Project3Page2 />,
+      color: '#fecaca',
+    },
   ];
   return (
     <WheelContextProvider>
