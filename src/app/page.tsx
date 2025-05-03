@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image, { ImageProps } from 'next/image';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useMeasure } from 'react-use';
 
 function PersonalSection() {
   return (
@@ -69,7 +70,10 @@ function Lightbox({ isOpen, onClose }: { isOpen: boolean; onClose: () => void })
   );
 }
 
-function SquirmImage(props: ImageProps) {
+function SquirmImage({
+  layoutPlaceholder = true,
+  ...props
+}: ImageProps & { layoutPlaceholder?: boolean }) {
   const imageRef = useRef<HTMLImageElement>(null);
   const [transform, setTransform] = useState('');
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -87,8 +91,6 @@ function SquirmImage(props: ImageProps) {
       const amplitude = 30;
       const tiltX = -yPos * amplitude;
       const tiltY = xPos * amplitude;
-      console.log('hi');
-
       setTransform(`perspective(2000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`);
     };
 
@@ -111,13 +113,15 @@ function SquirmImage(props: ImageProps) {
 
   return (
     <div className="relative max-h-full">
-      <div className={cn('h-full w-full opacity-0', isLightboxOpen && 'pointer-events-none')}>
-        <Image
-          {...props}
-          alt={props.alt}
-          className={cn('h-full w-full rounded-xl duration-100', props.className)}
-        />
-      </div>
+      {layoutPlaceholder && (
+        <div className={cn('h-full w-full opacity-0', isLightboxOpen && 'pointer-events-none')}>
+          <Image
+            {...props}
+            alt={props.alt}
+            className={cn('h-full w-full rounded-xl duration-100', props.className)}
+          />
+        </div>
+      )}
 
       <motion.div
         layout
@@ -252,9 +256,74 @@ function Project2Page2() {
 }
 
 function Project3Page1() {
+  const [rotatedContainerRef, { width, height }] = useMeasure();
+  const [remainingSpaceRef, remainingSpace] = useMeasure();
+
+  console.log(remainingSpace);
+
   return (
-    <ProjectSection className="grid grid-cols-2 gap-5" subtitle="Project 3">
-      <></>
+    <ProjectSection className="flex flex-col gap-8" subtitle="Project 3">
+      <h2 className="text-4xl font-black">Tomorrow&apos;s History Magzine</h2>
+      <p className="font-mono text-slate-700 uppercase">adobe indesign | adobe illustrator</p>
+      <p className="text-light font-mono text-sm text-slate-600">
+        I created an 8 page technology history magazine exploring retro-futuristic aesthetics and
+        historical tech milestones. The design merges International Typographic Style with
+        contemporary digital elements, using a modular grid system and stark typographic contrasts.
+        The layout features technical diagrams overlaid with bold geometric shapes and duotone
+        imagery, creating visual tension between historical documentation and modern design.
+      </p>
+      <div className="relative w-full flex-1">
+        <div className="absolute inset-0 flex w-full justify-between gap-5">
+          <div className="relative h-[334px] w-[417.5px]">
+            <div className="absolute top-0 left-0 h-[417.5px] w-[334px] translate-x-10 -translate-y-10 -rotate-90">
+              <SquirmImage
+                src="/P3/page-001.png"
+                alt="Project 3"
+                width={600}
+                height={600}
+                className="object-contain shadow-xl"
+              />
+            </div>
+          </div>
+          <div className="h-full flex-1">
+            <SquirmImage
+              src="/P3/page-002.png"
+              alt="Project 3"
+              width={600}
+              height={600}
+              className="h-full w-auto object-contain shadow-xl"
+            />
+          </div>
+        </div>
+      </div>
+      {/* <div className="relative flex-1" ref={rotatedContainerRef}>
+        <div
+          className="absolute top-0 left-0 flex origin-top-left flex-col items-stretch gap-5 *:flex-1"
+          style={{
+            width: height,
+            height: width,
+            transform: `rotate(-90deg) translateX(-${height}px)`,
+          }}
+        >
+          <SquirmImage
+            src="/P3/page-001.png"
+            alt="Project 3"
+            width={600}
+            height={600}
+            className="h-[417.5px] w-auto object-contain shadow-xl"
+          />
+          <div ref={remainingSpaceRef} className="bg-red-500" />
+        </div>
+      </div>
+      <div
+        className="fixed bg-white"
+        style={{
+          width: remainingSpace.width,
+          height: remainingSpace.height,
+          bottom: remainingSpace.bottom,
+          right: remainingSpace.right,
+        }}
+      ></div> */}
     </ProjectSection>
   );
 }
@@ -371,15 +440,15 @@ export default function Page() {
     },
     {
       element: <Project1 />,
-      color: '#bfdbfe',
+      color: '#fda4af',
     },
     {
       element: <Project2Page1 />,
-      color: '#a5f3fc',
+      color: '#feda71',
     },
     {
       element: <Project2Page2 />,
-      color: '#99f6e4',
+      color: '#e7947c',
     },
     {
       element: <Project3Page1 />,
