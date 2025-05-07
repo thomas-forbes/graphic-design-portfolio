@@ -440,23 +440,23 @@ export default function Page() {
     },
     {
       element: <Project1 />,
-      color: '#fda4af',
+      color: '#fed1d7',
     },
     {
       element: <Project2Page1 />,
-      color: '#feda71',
+      color: '#feecb8',
     },
     {
       element: <Project2Page2 />,
-      color: '#e7947c',
+      color: '#f3c9bd',
     },
     {
       element: <Project3Page1 />,
-      color: '#fed7aa',
+      color: '#feebd4',
     },
     {
       element: <Project3Page2 />,
-      color: '#fecaca',
+      color: '#fed5d5',
     },
   ];
   return (
